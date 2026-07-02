@@ -54,5 +54,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<Map<String, String>> handleFileUploadException(
+            FileUploadException ex) {
+
+        return new ResponseEntity<>(
+                Map.of("message", ex.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 }
 
