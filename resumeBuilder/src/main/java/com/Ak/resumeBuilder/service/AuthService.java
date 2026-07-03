@@ -2,14 +2,19 @@ package com.Ak.resumeBuilder.service;
 
 import com.Ak.resumeBuilder.document.User;
 import com.Ak.resumeBuilder.dtos.AuthResponse;
+import com.Ak.resumeBuilder.dtos.LoginRequest;
 import com.Ak.resumeBuilder.dtos.RegisterRequest;
 import com.Ak.resumeBuilder.exception.ResourceExistsException;
 import com.Ak.resumeBuilder.repository.UserRepository;
+import com.Ak.resumeBuilder.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,6 +22,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
     private  final UserRepository userRepository;
     private final EmailService emailService;
     @Value("${app.base.url}:http://localhost:8080")
@@ -112,7 +119,7 @@ public class AuthService {
         return User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .profileImageUrl(request.getProfileImageUrl())
                 .subscriptionPlan("Basic")
                 .emailVerified(false)
@@ -121,6 +128,17 @@ public class AuthService {
                 .build();
 
     }
-
+    public AuthResponse login(LoginRequest loginRequest) throws UnsupportedEncodingException {
+        User existingUser= userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(()->new UsernameNotFoundException("Invalid email or password"));
+        if(!passwordEncoder.matches(loginRequest.getPassword(), existingUser.getPassword())){
+            throw new UsernameNotFoundException("Invalid email or password");
+        }
+        String jwt =jwtUtils.generateToken(existingUser.getId());
+        AuthResponse response= toResponse(existingUser);
+       response.setToken(jwt);
+       return response;
+    }
 }
+
 

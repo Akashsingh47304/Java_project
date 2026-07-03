@@ -1,6 +1,7 @@
 package com.Ak.resumeBuilder.controller;
 
 import com.Ak.resumeBuilder.dtos.AuthResponse;
+import com.Ak.resumeBuilder.dtos.LoginRequest;
 import com.Ak.resumeBuilder.dtos.RegisterRequest;
 import com.Ak.resumeBuilder.service.AuthService;
 
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -41,5 +43,12 @@ public class AuthController {
         log.info("inside the auth controller-upload image ");
             Map<String,String> result = fileUploadService.uploadSingleImage(file);
             return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) throws UnsupportedEncodingException {
+        AuthResponse response= authService.login(request);
+        return ResponseEntity.ok(response);
+
     }
 }
