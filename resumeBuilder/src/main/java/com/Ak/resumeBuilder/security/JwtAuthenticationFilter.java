@@ -41,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Extract token
             String token = authHeader.substring(7);
+            log.info("Received Token: {}", token);
 
             if (jwtUtils.isTokenExpired(token)) {
                 log.error("JWT token has expired");

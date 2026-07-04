@@ -6,6 +6,7 @@ import com.Ak.resumeBuilder.dtos.LoginRequest;
 import com.Ak.resumeBuilder.dtos.RegisterRequest;
 import com.Ak.resumeBuilder.exception.ResourceExistsException;
 import com.Ak.resumeBuilder.repository.UserRepository;
+import com.Ak.resumeBuilder.security.CustomUserDetails;
 import com.Ak.resumeBuilder.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -138,6 +139,12 @@ public class AuthService {
         AuthResponse response= toResponse(existingUser);
        response.setToken(jwt);
        return response;
+    }
+
+    public AuthResponse getProfile(Object principalObject) {
+        CustomUserDetails userDetails = (CustomUserDetails) principalObject;
+        User existingUser = userDetails.getUser();   // assuming this method exists
+        return toResponse(existingUser);
     }
 }
 

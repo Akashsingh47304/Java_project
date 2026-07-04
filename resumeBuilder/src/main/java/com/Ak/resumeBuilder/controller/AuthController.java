@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +50,16 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) throws UnsupportedEncodingException {
         AuthResponse response= authService.login(request);
         return ResponseEntity.ok(response);
+
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(Authentication authentication){
+        Object principalObject= authentication.getPrincipal();
+
+     AuthResponse currentProfile=  authService.getProfile(principalObject);
+
+     return new ResponseEntity<>(currentProfile,HttpStatus.OK);
 
     }
 }
