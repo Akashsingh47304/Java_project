@@ -52,4 +52,12 @@ public class ResumeService {
         AuthResponse response= authService.getProfile(principal);
         return resumeRepository.findByUserIdOrderByUpdatedAtDesc(response.getId());
     }
+
+    public Resume getResumeById(String resumeId, Object principal) {
+        AuthResponse response= authService.getProfile(principal);
+        Resume existingResume= resumeRepository.findByIdAndUserId(resumeId,response.getId())
+                 .orElseThrow(()->new RuntimeException("resume not find"));
+        return existingResume;
+
+    }
 }
