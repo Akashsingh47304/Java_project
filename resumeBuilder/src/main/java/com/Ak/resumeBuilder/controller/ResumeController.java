@@ -35,7 +35,6 @@ public class ResumeController {
     }
 
     @GetMapping("/{id}")
-
     public ResponseEntity<?> getResumeById(@PathVariable String id,Authentication authentication){
         Resume resume= resumeService.getResumeById(id,authentication.getPrincipal());
         return ResponseEntity.ok(resume);
@@ -43,8 +42,11 @@ public class ResumeController {
 
     @PutMapping("/upload-image/{id}")
     public ResponseEntity<?> updateResume(@PathVariable String id,
-                                          @RequestBody Resume updatedData){
-        return null;
+                                          @RequestBody Resume updatedData,
+                                          Authentication authentication){
+        Resume updatedResume=resumeService.updateResume(id,updatedData,authentication.getPrincipal());
+   return ResponseEntity.ok(updatedResume);
+
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> uploadResumeImages(@PathVariable String id,
