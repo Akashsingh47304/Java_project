@@ -60,4 +60,15 @@ public class ResumeController {
      Map<String,String > response= fileUploadService.uploadResumeImages(id,authentication.getPrincipal(),thumbnail,profileImage);
      return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/id")
+    public ResponseEntity<?> deleteResume(@PathVariable String id,
+                                          Authentication authentication){
+       resumeService.deleteResume(id,authentication.getPrincipal());
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Resume deleted Successfully",
+
+                )
+        );
+    }
 }
