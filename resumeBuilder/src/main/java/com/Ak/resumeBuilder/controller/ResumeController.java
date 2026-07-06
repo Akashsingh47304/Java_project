@@ -2,6 +2,7 @@ package com.Ak.resumeBuilder.controller;
 
 import com.Ak.resumeBuilder.document.Resume;
 import com.Ak.resumeBuilder.dtos.CreateResume;
+import com.Ak.resumeBuilder.service.FileUploadService;
 import com.Ak.resumeBuilder.service.ResumeService;
 import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpServlet;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/resume")
@@ -22,6 +24,7 @@ import java.util.List;
 @Slf4j
 public class ResumeController {
     private final ResumeService resumeService;
+    private final FileUploadService fileUploadService;
 
     @PostMapping
     public ResponseEntity<?> createResume(@RequestBody CreateResume request, Authentication authentication){
@@ -40,7 +43,7 @@ public class ResumeController {
         return ResponseEntity.ok(resume);
     }
 
-    @PutMapping("/upload-image/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateResume(@PathVariable String id,
                                           @RequestBody Resume updatedData,
                                           Authentication authentication){
@@ -48,11 +51,13 @@ public class ResumeController {
    return ResponseEntity.ok(updatedResume);
 
     }
-    @PutMapping("/{id}")
+    @PutMapping("/upload-image/{id}")
     public ResponseEntity<?> uploadResumeImages(@PathVariable String id,
                                                 @RequestPart(value = "thumbnail",required = true)MultipartFile thumbnail,
                                                 @RequestPart(value = "profileImage",required = false) MultipartFile profileImage,
-                                                HttpServlet request) {
-        return null;
+                                                HttpServlet request,
+                                                Authentication authentication) {
+     Map<String,String > response= fileUploadService.uploadResumeImages(id,authentication.getPrincipal(),thumbnail,profileImage);
+     return ResponseEntity.ok(response);
     }
 }
