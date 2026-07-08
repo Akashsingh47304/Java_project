@@ -66,7 +66,7 @@ public class ResumeController {
        resumeService.deleteResume(id,authentication.getPrincipal());
         return ResponseEntity.ok(
                 Map.of(
-                        "message", "Resume deleted Successfully",
+                        "message", "Resume deleted Successfully"
 
                 )
         );
