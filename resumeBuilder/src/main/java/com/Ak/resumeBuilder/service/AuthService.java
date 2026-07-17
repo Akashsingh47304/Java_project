@@ -27,7 +27,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private  final UserRepository userRepository;
     private final EmailService emailService;
-    @Value("${app.base.url}:http://localhost:8080")
+    @Value("${app.base.url}")
     private String appBaseUrl;
 
     public AuthResponse register(RegisterRequest request){
@@ -42,7 +42,7 @@ public class AuthService {
         log.info("Saving user...");
         userRepository.save(newUser);
         log.info("User saved successfully");
-//       sendVerificationEmail(newUser);
+    sendVerificationEmail(newUser);
 
         log.info("Verification email sent");
 
@@ -50,17 +50,18 @@ public class AuthService {
 
 
     }
-//    public void verifyEmail(String token){
-//        User user = userRepository.findByToken(token)
-//                .orElseThrow(()-> new RuntimeException("Invalid or expires verification token"));
-//        if(user.getVerificationExpires()!=null && user.getVerificationExpires().isBefore(LocalDateTime.now())){
-//            throw new RuntimeException("verification token  is expired please request newOne");
-//        }
-//        user.setEmailVerified(true);
-//        user.setVerificationToken(null);
-//        user.setVerificationExpires(null);
-//        userRepository.save(user);
-//    }
+    public void verifyEmail(String token){
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(()-> new RuntimeException("Invalid or expires verification token"));
+        if(user.getVerificationExpires()!=null && user.getVerificationExpires().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("verification token  is expired please request newOne");
+      }
+       user.setEmailVerified(true);
+       user.setVerificationToken(null);
+      user.setVerificationExpires(null);
+      userRepository.save(user);
+      log.info("user is saved successfully with email-verification");
+    }
 
     public void sendVerificationEmail(User newUser) {
         try {
@@ -100,7 +101,7 @@ public class AuthService {
                             "<p>Regards,<br><strong>Resume Builder Team</strong></p>" +
 
                             "</div>";
-//                        emailService.sendHtmlEmail(newUser.getEmail(), "verify your email",html);
+                        emailService.sendHtmlEmail(newUser.getEmail(), "verify your email",html);
         }catch (Exception e){
             throw new RuntimeException("Failed to send verifciation email:"+ e.getMessage());
         }
